@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zn">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <style>
+    .text {
+      margin: 20px 0;
+      padding: 10px;
+      background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+      color: #fff;
+    }
+
+    #EasingTypes {
+      border: none;
+      margin: 20px 0;
+      padding: 10px;
+      background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+      color: #fff;
+      outline: none;
+    }
+
+    option {
+      color: #000;
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>粒子发射器</h2>
+  <div id="px-render"></div>
+
+  <script src="./js/pixi4.8.2.js"></script>
+  <script src="./js/spriteUtilities.js"></script>
+  <script src="./js/dust.js"></script>
+
+  <select id="EasingTypes">
+    <option value="star">1.点赞粒子发射器</option>
+    <option value="staring">2.持续粒子发射器</option>
+
+  </select>
+
+  <script src="./js/pixi4.8.2.js"></script>
+  <script src="./js/Charm.js"></script>
+  <script>
+    let EasingTypes = document.getElementById("EasingTypes");
+    EasingTypes.addEventListener('change', function () {
+      easingType = EasingTypes.value;
+      if (easingType == 'slideTo') {
+        slideTo()
+      } else if (easingType == 'staring') {
+        staring()
+      }
+    });
+
+    star()
+    // 1.点赞粒子发射器
+    function star() {
+      
+      //创建一个 Pixi应用 需要的一些参数
+      let option = {
+            width: 400,
+            height: 300,
+            transparent: true,
+        }
+        //创建一个 Pixi应用
+        let app = new PIXI.Application(option);
+        //获取舞台
+        let stage = app.stage;
+        //获取渲染器
+        let renderer = app.renderer;
+        let playground = document.getElementById('px-render');
+        //把 Pixi 创建的 canvas 添加到页面上
+        playground.appendChild(renderer.view);
+
+        let su = new SpriteUtilities(PIXI);
+        let d = new Dust(PIXI);
+
+        //需要加载的图片的地址
+        let imgURL = "./images/star.png";
+        delete PIXI.loader.resources[imgURL];
+        //加载图像，加载完成后执行setup函数 
+        PIXI.loader.add(imgURL).load(setup);
+
+        //创建ParticleContainer并将其添加到stage
+        let starContainer = new PIXI.particles.ParticleContainer(
+            1500,  
+            { alpha: true, scale: true, rotation: true, uvs: true }
+        );
+        stage.addChild(starContainer);
+
+        function setup() {
+			//创建星形粒子并将它们添加到starContainer
+            d.create(
+                128, //x 起始坐标
+                128, //y 起始坐标
+                () => su.sprite(imgURL),  
+                starContainer, //粒子的容器
+                50, //粒子数
+                0,//重力
+                false,//随机间隔
+                0, 6.28,//最小/最大角度
+                30, 90,//最小/最大尺寸
+                1, 3//最小/最大速度
+            );
+
+            //开始游戏循环
+            gameLoop();
+        }
+
+        function gameLoop() {
+            requestAnimationFrame(gameLoop);
+            d.update();
+            renderer.render(stage);
+        }
+    }
+
+
+    // 2.持续粒子发射器
+    function staring() {
+      //创建一个 Pixi应用 需要的一些参数
+      let option = {
+            width: 400,
+            height: 300,
+            transparent: true,
+        }
+        //创建一个 Pixi应用
+        let app = new PIXI.Application(option);
+        //获取舞台
+        let stage = app.stage;
+        //获取渲染器
+        let renderer = app.renderer;
+        let playground = document.getElementById('px-render');
+        //把 Pixi 创建的 canvas 添加到页面上
+        playground.appendChild(renderer.view);
+
+        let su = new SpriteUtilities(PIXI);
+        let d = new Dust(PIXI);
+        let particleStream;
+
+        //需要加载的图片的地址
+        let imgURL = "./images/star.png";
+        delete PIXI.loader.resources[imgURL];
+        //加载图像，加载完成后执行setup函数 
+        PIXI.loader.add(imgURL).load(setup);
+
+        function setup() {
+            let particleStream = d.emitter(
+                100,
+                () => d.create(
+                    128, 128,
+                    () => su.sprite(imgURL),
+                    stage,
+                    30,
+                    0.1,
+                    false,
+                    3.14, 6.28,
+                    30, 80,
+                    1, 5
+                )
+            );
+
+            particleStream.play();
+            //开始游戏循环
+            gameLoop();
+        }
+
+        function gameLoop() {
+            requestAnimationFrame(gameLoop);
+            d.update();
+            renderer.render(stage);
+        }
+    }
+  
+  </script>
+</body>

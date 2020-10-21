@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="zn">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <style>
+    .text {
+      margin: 20px 0;
+      padding: 10px;
+      background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+      color: #fff;
+    }
+
+    #EasingTypes {
+      border: none;
+      margin: 20px 0;
+      padding: 10px;
+      background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+      color: #fff;
+      outline: none;
+    }
+
+    option {
+      color: #000;
+      padding: 10px;
+    }
+
+    button {
+      display: inline-block;
+      color: #fff;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      padding: 10px 20px;
+      margin-bottom: 10px;
+    }
+
+    button:hover {
+      color: #ddd;
+    }
+
+    #play {
+      background-color: #ff0081;
+      box-shadow: 0 2px 25px rgba(255, 0, 130, 0.5);
+    }
+
+    #pause {
+      background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+      margin-left: 20px;
+      box-shadow: 0 2px 25px rgba(22, 217, 227, 0.5);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="px-render"></div>
+
+  <select id="EasingTypes">
+    <option value="TilingSprite">1.平铺效果</option>
+    <option value="TilingSprite3D">2.平铺伪3D效果</option>
+    <option value="Mask">3.蒙版</option>
+    <option value="AnimatedMask">4.蒙版动画</option>
+    <option value="Rope">5.神龙摆尾效果</option>
+    <option value="Tint">6.着色</option>
+    <option value="Video">7.视频纹理</option>
+  </select>
+  <div id="video" style="display: none">
+    <button id="play">播放</button>
+    <button id="pause">暂停</button>
+  </div>
+  
+
+
+  <script src="./js/pixi4.8.2.js"></script>
+  <script src="./js/Charm.js"></script>
+  <script>
+    let EasingTypes = document.getElementById("EasingTypes");
+    EasingTypes.addEventListener('change', function () {
+      easingType = EasingTypes.value;
+      if (easingType == 'TilingSprite') {
+        TilingSprite()
+      } else if (easingType == 'TilingSprite3D') {
+        TilingSprite3D()
+      } else if (easingType == 'Mask') {
+        Mask()
+      } else if (easingType == 'AnimatedMask') {
+        AnimatedMask()
+      } else if (easingType == 'TilingSprite') {
+        TilingSprite()
+      } else if (easingType == 'Rope') {
+        Rope()
+      } else if (easingType == 'Tint') {
+        Tint()
+      } else if (easingType == 'Video') {
+        document.querySelector('#video').style.display = 'block'
+        Video()
+      }
+    });
+
+    TilingSprite()
+
+    // 1.平铺效果
+    function TilingSprite() {
+      const option = { //创建一个 Pixi应用 需要的一些参数
+        width: 300,
+        height: 300,
+        transparent: true,
+      }
+
+      const app = new PIXI.Application(option); //创建一个 Pixi应用
+      const stage = app.stage; //获取舞台
+      const renderer = app.renderer; //获取渲染器
+      const playground = document.getElementById('px-render');
+      playground.appendChild(renderer.view); //把 Pixi 创建的 canvas 添加到页面上
+
+      const imgURL = "./images/brick.jpg"; //需要加载的图片的地址
+      delete PIXI.loader.resources[imgURL];
+      PIXI.loader.add(imgURL).load(setup); //加载图像，加载完成后执行setup函数 
+      let tilingSprite; //需要用到的平铺精灵
+      let state = play; // 将游戏的当前状态设置为play：
+
+      function setup() {
+        tilingSprite = new PIXI.extras.TilingSprite(
+          PIXI.loader.resources[imgURL].texture, 200, 200
+        );
+        stage.addChild(tilingSprite);
+        gameLoop(); //开始游戏循环
+      }
+
+      function gameLoop() {
+        requestAnimationFrame(gameLoop); // 循环调用gameLoop
+        state(); // 更新当前的游戏状态
+        renderer.render(stage); // 渲染舞台
+      }
+
+      function play() { //使精灵移动的函数
+        tilingSprite.tilePosition.x -= 1;
+      }
+    }
+
+    // 2.平铺效果3D
+    function TilingSprite3D() {
+      //创建一个 Pixi应用 需要的一些参数
+      const option = {
+        width: 1286,
+        height: 640,
+        transparent: true,
+      }
+
+      const app = new PIXI.Application(option); //创建一个 Pixi应用
+      const stage = app.stage; //获取舞台
+      const renderer = app.renderer; //获取渲染器
+      let playground = document.getElementById('px-render');
+      playground.appendChild(renderer.view); //把 Pixi 创建的 canvas 添加到页面上
+
+      //需要加载的图片的地址
+      let woodUrl = "https://kkkk1000.com/images/learnPixiJS-VisualEffects/wood.jpg";
+      let groundUrl = "https://kkkk1000.com/images/learnPixiJS-VisualEffects/ground.png";
+
+      PIXI.loader.add([woodUrl, groundUrl]).load(setup); //加载图像，加载完成后执行setup函数 
+
+      let woodScript; //需要用到的平铺精灵
+      let groundScript;
+
+      function setup() {
+        let resources = PIXI.loader.resources;
+        woodScript = new PIXI.extras.TilingSprite(
+          resources[woodUrl].texture, 1286, 640
+        );
+
+        groundScript = new PIXI.extras.TilingSprite(
+          resources[groundUrl].texture, 1286, 179
+        );
+        groundScript.y = 640 - 179;
+
+        stage.addChild(woodScript);
+        stage.addChild(groundScript);
+
+        gameLoop(); //开始游戏循环
+      }
+
+      let state = play; // 将游戏的当前状态设置为play：
+      function gameLoop() {
+        requestAnimationFrame(gameLoop); // 循环调用gameLoop
+        state(); // 更新当前的游戏状态
+        renderer.render(stage); // 渲染舞台
+      }
+
+      //使精灵移动的函数
+      function play() {
+        woodScript.tilePosition.x -= 1;
+        groundScript.tilePosition.x -= 5;
+      }
+    }
+
+
+    // 3.贝塞尔曲线
+    function Mask() {
+      //创建一个 Pixi应用 需要的一些参数
+      let option = {
+        width: 400,
+        height: 400,
+        transparent: true,
+      }
+      //创建一个 Pixi应用
+      let app = new PIXI.Application(option);
+      //获取舞台
+      let stage = app.stage;
+      //获取渲染器
+      let renderer = app.renderer;
+      let playground = document.getElementById('px-render');
+      //把 Pixi 创建的 canvas 添加到页面上
+      playground.appendChild(renderer.view);
+
+      //需要加载的图片的地址
+      let imgURL = "https://www.kkkk1000.com/images/learnPixiJS-VisualEffects/Pikachu.jpg";
+      //加载图像，加载完成后执行setup函数 
+      PIXI.loader.add(imgURL).load(setup);
+
+      function setup() {
+        //创建精灵
+        let Pikachu = new PIXI.Sprite(PIXI.loader.resources[imgURL].texture);
+
+        //创建一个正方形对象
+        let rectangle = new PIXI.Graphics();
+        rectangle.beginFill(0x66CCFF);
+        rectangle.drawRect(0, 0, 200, 200);
+        rectangle.endFill();
+        rectangle.x = 100;
+        rectangle.y = 100;
+
+        //给精灵设置蒙版
+        Pikachu.mask = rectangle;
+
+        //把精灵添加到舞台上
+        stage.addChild(Pikachu);
+        //把正方形对象添加到舞台上
+        stage.addChild(rectangle);
+      }
+    }
+
+    // 4.蒙版动画
+    function AnimatedMask() {
+      //2.创建一个 Pixi应用 需要的一些参数
+      let option = {
+        width: 640,
+        height: 360,
+        transparent: true,
+      }
+      //创建一个 Pixi应用
+      let app = new PIXI.Application(option);
+      //获取舞台
+      let stage = app.stage;
+      //获取渲染器
+      let renderer = app.renderer;
+      let playground = document.getElementById('px-render');
+      //把 Pixi 创建的 canvas 添加到页面上
+      playground.appendChild(renderer.view);
+
+      //需要加载的图片的地址
+      let color = "https://www.kkkk1000.com/images/learnPixiJS-VisualEffects/bg.jpg";
+      let blackWhite = "https://www.kkkk1000.com/images/learnPixiJS-VisualEffects/bg2.png";
+      let clear = "https://www.kkkk1000.com/images/learnPixiJS-VisualEffects/clear1.png";
+
+      //需要用到的精灵
+      let colorSprite;
+      let blackWhiteSprite;
+      let clearSprite;
+      //加载图像，加载完成后执行setup函数 
+      PIXI.loader.add([color, blackWhite, clear]).load(setup);
+
+      function setup() {
+        //创建精灵
+        let resources = PIXI.loader.resources;
+        colorSprite = new PIXI.Sprite(resources[color].texture);
+        blackWhiteSprite = new PIXI.Sprite(resources[blackWhite].texture);
+        clearSprite = new PIXI.Sprite(resources[clear].texture);
+
+        clearSprite.x = 250;
+        clearSprite.y = 250;
+        clearSprite.anchor.x = 0.5;
+        clearSprite.anchor.y = 0.5;
+
+        colorSprite.mask = clearSprite;
+
+        //把精灵添加到舞台上
+        stage.addChild(blackWhiteSprite);
+        stage.addChild(colorSprite);
+        stage.addChild(clearSprite);
+
+        //开始游戏循环
+        gameLoop();
+      }
+
+      // 将游戏的当前状态设置为play：
+      let state = play;
+
+      function gameLoop() {
+        // 循环调用gameLoop
+        requestAnimationFrame(gameLoop);
+        // 更新当前的游戏状态
+        state();
+        // 渲染舞台
+        renderer.render(stage);
+      }
+
+      //使精灵移动的函数
+      function play() {
+        if (clearSprite.width < 1200) {
+          clearSprite.width += 4;
+          clearSprite.height += 4;
+        }
+      }
+    }
+
+    // 5.神龙摆尾效果
+    function Rope() {
+      //创建一个 Pixi应用 需要的一些参数
+      let option = {
+        width: 640,
+        height: 360,
+      }
+      //创建一个 Pixi应用
+      let app = new PIXI.Application(option);
+      //获取舞台
+      let stage = app.stage;
+      //获取渲染器
+      let renderer = app.renderer;
+      let playground = document.getElementById('px-render');
+      //把 Pixi 创建的 canvas 添加到页面上
+      playground.appendChild(renderer.view);
+      //绳段数
+      let numberOfSegments = 20;
+      //图片宽度
+      let imageWidth = 600;
+      //一段长度
+      let ropeLength = imageWidth / numberOfSegments;
+      //保存 Point 对象的数组
+      let points = [];
+      for (let i = 0; i < numberOfSegments; i++) {
+        points.push(new PIXI.Point(i * ropeLength, 0));
+      }
+
+      //创建 Rope 类型的对象
+      let snake = new PIXI.mesh.Rope(PIXI.Texture.fromImage(
+        'https://www.kkkk1000.com/images/learnPixiJS-VisualEffects/snake.png'), points);
+      snake.x = 0;
+      //创建一个容器
+      let snakeContainer = new PIXI.Container();
+      //把创建的 Rope 类型的对象添加到容器中
+      snakeContainer.addChild(snake);
+      //把容器添加到舞台上
+      stage.addChild(snakeContainer);
+      //设置容器位置
+      snakeContainer.position.set(10, 150);
+
+      //创建一个图形对象
+      let g = new PIXI.Graphics();
+      g.x = snake.x;
+      g.y = snake.y;
+      //把图形对象添加到容器中
+      snakeContainer.addChild(g);
+
+
+      //实现动画
+      let count = 0;
+      app.ticker.add(function () {
+        count += 0.1;
+        //通过 for 循环将数组中的每个点按照椭圆形的轨迹移动，形成波浪效果。
+        for (let i = 0; i < points.length; i++) {
+          points[i].y = Math.sin((i * 0.5) + count) * 30;
+          points[i].x = i * ropeLength + Math.cos((i * 0.3) + count) * numberOfSegments;
+
+        }
+        renderPoints();
+      });
+
+      function renderPoints() {
+        g.clear();
+        g.lineStyle(2, 0xffc2c2);
+        g.moveTo(points[0].x, points[0].y);
+
+        for (let i = 1; i < points.length; i++) {
+          g.lineTo(points[i].x, points[i].y);
+        }
+
+        for (let i = 1; i < points.length; i++) {
+          g.beginFill(0xff0022);
+          g.drawCircle(points[i].x, points[i].y, 5);
+          g.endFill();
+        }
+      }
+
+      let showRope = document.querySelector(".showRope");
+      let hideRope = document.querySelector(".hideRope");
+    }
+
+    // 6.着色
+    function Tint() {
+      //创建一个 Pixi应用 需要的一些参数
+      let option = {
+        width: 400,
+        height: 300,
+        transparent: true,
+      }
+      //创建一个 Pixi应用
+      let app = new PIXI.Application(option);
+      //获取舞台
+      let stage = app.stage;
+      //获取渲染器
+      let renderer = app.renderer;
+      let playground = document.getElementById('px-render');
+      //把 Pixi 创建的 canvas 添加到页面上
+      playground.appendChild(renderer.view);
+
+      //需要加载的图片的地址
+      let imgURL = "https://www.kkkk1000.com/images/learnPixiJS-VisualEffects/brick.jpg";
+      delete PIXI.loader.resources[imgURL];
+      //加载图像，加载完成后执行setup函数 
+      PIXI.loader.add(imgURL).load(setup);
+
+      function setup() {
+        let resources = PIXI.loader.resources;
+        let sprite = new PIXI.Sprite(resources[imgURL].texture);
+        sprite.tint = 0xFFFF660;
+        sprite.x = 200;
+
+        let sprite1 = new PIXI.Sprite(resources[imgURL].texture);
+
+        stage.addChild(sprite);
+        stage.addChild(sprite1);
+      }
+    }
+
+    
+    
+    function Video() {
+      //创建一个 Pixi应用 需要的一些参数
+      const option = {
+            width: 1426,
+            height: 740,
+            transparent: true,
+        }
+        //创建一个 Pixi应用
+        let app = new PIXI.Application(option);
+        //获取舞台
+        let stage = app.stage;
+        //获取渲染器
+        let renderer = app.renderer;
+        let playground = document.getElementById('px-render');
+        //把 Pixi 创建的 canvas 添加到页面上
+        playground.appendChild(renderer.view);
+
+        const video =  document.createElement('video')
+        video.crossOrigin = 'anonymous'
+        video.preload = 'auto'
+        video.src = './images/123.mp4'
+
+        const videoSprite = new PIXI.Sprite.from(video); //创建视频精灵
+        videoSprite.width = option.width; //设置视频精灵的宽度和高度
+        videoSprite.height = option.height;
+
+        //把视频精灵添加到舞台上
+        stage.addChild(videoSprite);
+
+        const pixiBtn = document.getElementById("play");
+        const pauseBtn = document.getElementById("pause");
+
+        pixiBtn.addEventListener("click", function () {
+          video.play();
+        });
+        pauseBtn.addEventListener("click", function () {
+          video.pause()
+        });
+    }
+  </script>
+</body>

@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="zn">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <style>
+    .text {
+      margin: 20px 0;
+      padding: 10px;
+      background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+      color: #fff;
+    }
+
+    #EasingTypes {
+      border: none;
+      margin: 20px 0;
+      padding: 10px;
+      background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+      color: #fff;
+      outline: none;
+    }
+
+    option {
+      color: #000;
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="px-render"></div>
+
+  <select id="EasingTypes">
+    <option value="slide">1.滑动补间效果</option>
+    <option value="slideTo">2.转场效果</option>
+    <option value="followCurve">3.贝塞尔曲线</option>
+    <option value="walkPath">4.指定曲线</option>
+    <option value="walkCurve">5.连续贝塞尔曲线</option>
+    <option value="pulse">6.淡入淡出效果</option>
+    <option value="scale">7.缩放效果</option>
+    <option value="breathe">8.呼吸效果</option>
+    <option value="strobe">9.闪烁效果</option>
+    <option value="wobble">10果冻效果</option>
+  </select>
+
+  <script src="./js/pixi4.8.2.js"></script>
+  <script src="./js/Charm.js"></script>
+  <script>
+    let EasingTypes = document.getElementById("EasingTypes");
+    EasingTypes.addEventListener('change', function () {
+      easingType = EasingTypes.value;
+      if (easingType == 'slideTo') {
+        slideTo()
+      } else if (easingType == 'followCurve') {
+        followCurve()
+      } else if (easingType == 'walkPath') {
+        walkPath()
+      } else if (easingType == 'walkCurve') {
+        walkCurve()
+      } else if (easingType == 'pulse') {
+        pulse()
+      } else if (easingType == 'scale') {
+        scale()
+      } else if (easingType == 'breathe') {
+        breathe()
+      } else if (easingType == 'strobe') {
+        strobe()
+      } else if (easingType == 'wobble') {
+        wobble()
+      }
+    });
+
+    slide()
+    // 1.滑动补间效果
+    function slide() {
+      //创建一个 Pixi应用 需要的一些参数
+      let option = {
+        width: 300,
+        height: 300,
+        transparent: true,
+      }
+      //创建一个 Pixi应用
+      let app = new PIXI.Application(option);
+      //获取舞台
+      let stage = app.stage;
+      //获取渲染器
+      let renderer = app.renderer;
+      let playground = document.getElementById('px-render');
+      //把 Pixi 创建的 canvas 添加到页面上
+      playground.appendChild(renderer.view);
+
+      //实例化Charm
+      let c = new Charm(PIXI);
+
+      //需要加载的图片的地址
+      let imgURL = "http://p0.meituan.net/scarlett/1560f003806891e7f616a60a5d8b33e32499.png";
+      //加载图像，加载完成后执行setup函数 
+      PIXI.loader.add(imgURL).load(setup);
+      //补间对象
+      let slidePixie;
+
+      function setup() {
+        //创建精灵
+        let resources = PIXI.loader.resources;
+        let sprite = new PIXI.Sprite(resources[imgURL].texture);
+
+        //添加精灵到舞台
+        stage.addChild(sprite);
+
+        slidePixie = c.slide(sprite, 80, 128, 120, "smoothstep", true);
+        slidePixie.onComplete = () => console.log("一次滑动完成");
+
+        //开始游戏循环
+        gameLoop();
+      }
+
+      let state = play;
+
+      function gameLoop() {
+        // 循环调用gameLoop
+        requestAnimationFrame(gameLoop);
+        state();
+        //更新补间
+        c.update();
+        // 渲染舞台
+        renderer.render(stage);
+      }
+
+      function play() {}
+    }
+    // 2.转场效果
+    function slideTo() {
+      //创建一个 Pixi应用 需要的一些参数
+      let option = {
+        width: 300,
+        height: 300,
+        transparent: true,
+      }
+      //创建一个 Pixi应用
+      let app = new PIXI.Application(option);
+      //获取舞台
+      let stage = app.stage;
+      //获取渲染器
+      let renderer = app.renderer;
+      let playground = document.getElementById('px-render');
+      //把 Pixi 创建的 canvas 添加到页面上
+      playground.appendChild(renderer.view);
+
+      //实例化Charm
+      let c = new Charm(PIXI);
+
+      let canvasWith = option.width;
+      let canvasHeight = option.height;
+
+      sceneOne = new PIXI.Container();
+      sceneTwo = new PIXI.Container();
+
+      stage.addChild(sceneOne);
+      stage.addChild(sceneTwo);
+
+      //1. Scene one sprites:	
+      //画蓝色矩形
+      let blueRectangle = new PIXI.Graphics();
+      blueRectangle.beginFill(0x014ACA);
+      blueRectangle.drawRect(0, 0, canvasWith, canvasHeight);
+      blueRectangle.endFill();
+      sceneOne.addChild(blueRectangle);
+
+      //添加文字，并在容器中居中
+      let sceneOneText = new PIXI.Text("Scene One");
+      sceneOneText.style = {
+        fill: "#fff",
+        fontSize: "40px"
+      };
+      let sceneOneTextX = (canvasWith - sceneOneText.width) / 2;
+      let sceneOneTextY = (canvasWith - sceneOneText.height) / 2;
+      sceneOneText.position.set(sceneOneTextX, sceneOneTextY);
+      sceneOne.addChild(sceneOneText);
+
+      //2. Scene two sprites:
+      //画红色矩形
+      let redRectangle = new PIXI.Graphics();
+      redRectangle.beginFill(0xEF4631);
+      redRectangle.drawRect(0, 0, canvasWith, canvasHeight);
+      redRectangle.endFill();
+      sceneTwo.addChild(redRectangle);
+
+      //添加文字，并在容器中居中
+      let sceneTwoText = new PIXI.Text("Scene Two");
+      sceneTwoText.style = {
+        fill: "#fff",
+        fontSize: "40px"
+      };
+      let sceneTwoTextX = (canvasWith - sceneTwoText.width) / 2;
+      let sceneTwoTextY = (canvasHeight - sceneTwoText.height) / 2;
+      sceneTwoText.position.set(sceneTwoTextX, sceneTwoTextY);
+      sceneTwo.addChild(sceneTwoText);
+
+      //将 sceneTwo 移到画布的右边缘之外
+      sceneTwo.x = canvasWith;
+
+      //将 sceneOne 滑动到左侧，然后从右侧滑动 sceneTwo ，取代它的位置
+      c.slide(sceneTwo, 0, 0);
+      c.slide(sceneOne, -canvasWith, 0);
+
+      let state = play;
+
+      function gameLoop() {
+        // 循环调用gameLoop
+        requestAnimationFrame(gameLoop);
+        state();
+        //更新补间
+        c.update();
+        // 渲染舞台
+        renderer.render(stage);
+      }
+
+      function play() {}
+
+      gameLoop();
+    }
+    // 3.贝塞尔曲线
+    function followCurve() {
+      //创建一个 Pixi应用 需要的一些参数
+      let option = {
+        width: 400,
+        height: 300,
+        transparent: true,
+        antialias: true
+      }
+      //创建一个 Pixi应用
+      let app = new PIXI.Application(option);
+      //获取舞台
+      let stage = app.stage;
+      //获取渲染器
+      let renderer = app.renderer;
+      let playground = document.getElementById('px-render');
+      //把 Pixi 创建的 canvas 添加到页面上
+      playground.appendChild(renderer.view);
+
+      //实例化Charm
+      let c = new Charm(PIXI);
+
+      //需要加载的图片的地址
+      let imgURL = "http://p0.meituan.net/scarlett/1560f003806891e7f616a60a5d8b33e32499.png";
+      // PIXI.loader.resources[imgURL].texture.destroy(true);
+      delete PIXI.loader.resources[imgURL];
+      //加载图像，加载完成后执行setup函数 
+      PIXI.loader.add(imgURL).load(setup);
+
+      function setup() {
+        let resources = PIXI.loader.resources;
+        let sprite = new PIXI.Sprite(resources[imgURL].texture);
+
+        stage.addChild(sprite);
+        sprite.position.set(88, 160)
+        let curve = [
+          [sprite.x, sprite.y], //起始点
+          [108, 32], //控制点1
+          [176, 32], //控制点2
+          [196, 160] //结束点
+        ];
+        c.followCurve(
+          sprite, //需要移动的精灵
+          curve, //贝塞尔曲线数组
+          120, //持续时间，以帧为单位
+          "smoothstep", //缓动类型
+          true, //yoyo
+          1000 //yoyo之前的延迟时间
+        );
+
+        //画出精灵的曲线移动路径
+        let bezierLine = new PIXI.Graphics();
+        bezierLine.lineStyle(2, 0x000000, 1);
+        bezierLine.moveTo(88, 160);
+        bezierLine.bezierCurveTo(108, 32, 176, 32, 196, 160);
+        stage.addChild(bezierLine);
+
+        sprite.anchor.set(0.5, 0.5);
+
+        //开始游戏循环
+        gameLoop();
+      }
+
+      // 将游戏的当前状态设置为play：
+      let state = play;
+
+      function gameLoop() {
+        // 循环调用gameLoop
+        requestAnimationFrame(gameLoop);
+        state();
+        //更新补间
+        c.update();
+        // 渲染舞台
+        renderer.render(stage);
+      }
+
+      function play() {}
+    }
+
+    // 4.指定曲线
+    function walkPath() {
+      //创建一个 Pixi应用 需要的一些参数
+      let option = {
+        width: 400,
+        height: 300,
+        transparent: true,
+      }
+      //创建一个 Pixi应用
+      let app = new PIXI.Application(option);
+      //获取舞台
+      let stage = app.stage;
+      //获取渲染器
+      let renderer = app.renderer;
+      let playground = document.getElementById('px-render');
+      //把 Pixi 创建的 canvas 添加到页面上
+      playground.appendChild(renderer.view);
+
+      //实例化Charm
+      let c = new Charm(PIXI);
+
+      //需要加载的图片的地址
+      let imgURL = "http://p0.meituan.net/scarlett/1560f003806891e7f616a60a5d8b33e32499.png";
+      // PIXI.loader.resources[imgURL].texture.destroy(true);
+      delete PIXI.loader.resources[imgURL];
+      //加载图像，加载完成后执行setup函数 
+      PIXI.loader.add(imgURL).load(setup);
+
+      function setup() {
+        let resources = PIXI.loader.resources;
+        let sprite = new PIXI.Sprite(resources[imgURL].texture);
+
+        stage.addChild(sprite);
+        sprite.position.set(32, 32);
+
+        let waypoints = [
+          [32, 32], //要移动到的第一个坐标点
+          [32, 128], //要移动到的第二个坐标点
+          [300, 128], //要移动到的第三个坐标点
+          [300, 32], //要移动到的第四个坐标点
+          [32, 32] //要移动到的第五个坐标点
+        ];
+
+        c.walkPath(
+          sprite, //需要移动的精灵
+          waypoints, //坐标点的二维数组
+          300, //持续时间，以帧为单位
+          "smoothstep", //缓动类型
+          true, //循环
+          true, //轮流反向播放动画
+          1000 //移动到路径的下一部分之前应该等待的时间
+        );
+
+        //开始游戏循环
+        gameLoop();
+      }
+
+      let state = play;
+
+      function gameLoop() {
+        // 循环调用gameLoop
+        requestAnimationFrame(gameLoop);
+        state();
+        //更新补间
+        c.update();
+        // 渲染舞台
+        renderer.render(stage);
+      }
+
+      function play() {}
+    }
+    // 5.连续贝塞尔曲线
+    function walkCurve() {
+      //创建一个 Pixi应用 需要的一些参数
+      let option = {
+        width: 400,
+        height: 600,
+        transparent: true,
+        antialias: true
+      }
+      //创建一个 Pixi应用
+      let app = new PIXI.Application(option);
+      //获取舞台
+      let stage = app.stage;
+      //获取渲染器
+      let renderer = app.renderer;
+      let playground = document.getElementById('px-render');
+      //把 Pixi 创建的 canvas 添加到页面上
+      playground.appendChild(renderer.view);
+
+      //实例化Charm
+      let c = new Charm(PIXI);
+
+      //需要加载的图片的地址
+      let imgURL = "http://p0.meituan.net/scarlett/1560f003806891e7f616a60a5d8b33e32499.png";
+      // PIXI.loader.resources[imgURL].texture.destroy(true);
+      delete PIXI.loader.resources[imgURL];
+      //加载图像，加载完成后执行setup函数 
+      PIXI.loader.add(imgURL).load(setup);
+
+      function setup() {
+        let resources = PIXI.loader.resources;
+        let sprite = new PIXI.Sprite(resources[imgURL].texture);
+
+        stage.addChild(sprite);
+        sprite.position.set(50, 256)
+        let curvedWaypoints = [
+          //第一条曲线
+          [
+            [sprite.x, sprite.y],
+            [75, 500],
+            [200, 500],
+            [300, 300]
+          ],
+          //第二条曲线
+          [
+            [300, 300],
+            [250, 100],
+            [100, 100],
+            [sprite.x, sprite.y]
+          ]
+        ];
+
+        c.walkCurve(
+          sprite, //需要移动的精灵
+          curvedWaypoints, //贝塞尔曲线的坐标点的数组
+          300, //持续时间，以帧为单位
+          "smoothstep", //缓动类型
+          true, //循环
+          true, //轮流反向播放动画
+          1000 //移动到路径的下一部分之前应该等待的时间
+        );
+
+        sprite.anchor.set(0.5, 0.5);
+
+        //画出精灵的曲线移动路径
+        let bezierLine = new PIXI.Graphics();
+        bezierLine.lineStyle(2, 0x000000, 1);
+        bezierLine.moveTo(sprite.x, sprite.y);
+        bezierLine.bezierCurveTo(75, 500, 200, 500, 300, 300);
+        bezierLine.bezierCurveTo(250, 100, 100, 100, sprite.x, sprite.y);
+        stage.addChild(bezierLine);
+
+        //开始游戏循环
+        gameLoop();
+      }
+
+      // 将游戏的当前状态设置为play：
+      let state = play;
+
+      function gameLoop() {
+        // 循环调用gameLoop
+        requestAnimationFrame(gameLoop);
+        // 更新当前的游戏状态
+        state();
+        c.update();
+        // 渲染舞台
+        renderer.render(stage);
+      }
+
+      //使精灵移动的函数
+      function play() {}
+    }
+    // 6.淡入淡出效果
+    function pulse() {
+      //创建一个 Pixi应用 需要的一些参数
+      let option = {
+        width: 400,
+        height: 300,
+        transparent: true,
+      }
+      //创建一个 Pixi应用
+      let app = new PIXI.Application(option);
+      //获取舞台
+      let stage = app.stage;
+      //获取渲染器
+      let renderer = app.renderer;
+      let playground = document.getElementById('px-render');
+      //把 Pixi 创建的 canvas 添加到页面上
+      playground.appendChild(renderer.view);
+
+      //实例化Charm
+      let c = new Charm(PIXI);
+
+      //需要加载的图片的地址
+      let imgURL = "http://p0.meituan.net/scarlett/1560f003806891e7f616a60a5d8b33e32499.png";
+      // PIXI.loader.resources[imgURL].texture.destroy(true);
+      delete PIXI.loader.resources[imgURL];
+      //加载图像，加载完成后执行setup函数 
+      PIXI.loader.add(imgURL).load(setup);
+
+      function setup() {
+        let resources = PIXI.loader.resources;
+        let sprite = new PIXI.Sprite(resources[imgURL].texture);
+
+        stage.addChild(sprite);
+
+        //实现连续淡入淡出
+        c.pulse(sprite);
+
+        //开始游戏循环
+        gameLoop();
+      }
+
+      let state = play;
+
+      function gameLoop() {
+        // 循环调用gameLoop
+        requestAnimationFrame(gameLoop);
+        state();
+        //更新补间
+        c.update();
+        // 渲染舞台
+        renderer.render(stage);
+      }
+
+      function play() {}
+    }
+
+    // 7. 缩放效果
+    function scale() {
+      //创建一个 Pixi应用 需要的一些参数
+      let option = {
+        width: 400,
+        height: 300,
+        transparent: true,
+      }
+      //创建一个 Pixi应用
+      let app = new PIXI.Application(option);
+      //获取舞台
+      let stage = app.stage;
+      //获取渲染器
+      let renderer = app.renderer;
+      let playground = document.getElementById('px-render');
+      //把 Pixi 创建的 canvas 添加到页面上
+      playground.appendChild(renderer.view);
+
+      //实例化Charm
+      let c = new Charm(PIXI);
+
+      //需要加载的图片的地址
+      let imgURL = "http://p0.meituan.net/scarlett/1560f003806891e7f616a60a5d8b33e32499.png";
+      // PIXI.loader.resources[imgURL].texture.destroy(true);
+      delete PIXI.loader.resources[imgURL];
+      //加载图像，加载完成后执行setup函数 
+      PIXI.loader.add(imgURL).load(setup);
+
+      function setup() {
+        let resources = PIXI.loader.resources;
+        let sprite = new PIXI.Sprite(resources[imgURL].texture);
+
+        stage.addChild(sprite);
+        sprite.position.set(88, 160);
+        //设置锚点（anchor）居中 
+        //sprite.anchor.set(0.5, 0.5);
+
+        c.scale(
+          sprite, //精灵
+          0.1, //x轴缩放的比例
+          0.1, //y轴缩放的比例
+          100 //持续时间，以帧为单位
+        );
+
+        //开始游戏循环
+        gameLoop();
+      }
+
+      let state = play;
+
+      function gameLoop() {
+        // 循环调用gameLoop
+        requestAnimationFrame(gameLoop);
+        state();
+        //更新补间
+        c.update();
+        // 渲染舞台
+        renderer.render(stage);
+      }
+
+      function play() {}
+    }
+
+    // 8.breathe
+    function breathe() {
+      //创建一个 Pixi应用 需要的一些参数
+      let option = {
+        width: 400,
+        height: 300,
+        transparent: true,
+      }
+      //创建一个 Pixi应用
+      let app = new PIXI.Application(option);
+      //获取舞台
+      let stage = app.stage;
+      //获取渲染器
+      let renderer = app.renderer;
+      let playground = document.getElementById('px-render');
+      //把 Pixi 创建的 canvas 添加到页面上
+      playground.appendChild(renderer.view);
+
+      //实例化Charm
+      let c = new Charm(PIXI);
+
+      //需要加载的图片的地址
+      let imgURL = "http://p0.meituan.net/scarlett/1560f003806891e7f616a60a5d8b33e32499.png";
+      // PIXI.loader.resources[imgURL].texture.destroy(true);
+      delete PIXI.loader.resources[imgURL];
+      //加载图像，加载完成后执行setup函数 
+      PIXI.loader.add(imgURL).load(setup);
+
+      function setup() {
+        let resources = PIXI.loader.resources;
+        let sprite = new PIXI.Sprite(resources[imgURL].texture);
+
+        stage.addChild(sprite);
+        sprite.position.set(88, 160);
+        //设置锚点（anchor）居中 
+        //sprite.anchor.set(0.5, 0.5);
+
+        c.breathe(
+          sprite, //精灵
+          0.1, //x轴缩放的比例
+          0.1, //y轴缩放的比例
+          100, //持续时间，以帧为单位
+          true, //轮流反向播放 
+          0, //yoyo 之间的延迟时间
+        );
+
+        //开始游戏循环
+        gameLoop();
+      }
+
+      let state = play;
+
+      function gameLoop() {
+        // 循环调用gameLoop
+        requestAnimationFrame(gameLoop);
+        state();
+        //更新补间
+        c.update();
+        // 渲染舞台
+        renderer.render(stage);
+      }
+
+      //使精灵移动的函数
+      function play() {}
+    }
+
+    // 9.strobe
+    function strobe() {
+      //创建一个 Pixi应用 需要的一些参数
+      let option = {
+        width: 800,
+        height: 600,
+        transparent: false,
+      }
+      //创建一个 Pixi应用
+      let app = new PIXI.Application(option);
+      //获取舞台
+      let stage = app.stage;
+      //获取渲染器
+      let renderer = app.renderer;
+      let playground = document.getElementById('px-render');
+      //把 Pixi 创建的 canvas 添加到页面上
+      playground.appendChild(renderer.view);
+
+      //实例化Charm
+      let c = new Charm(PIXI);
+
+      //需要加载的图片的地址
+      let imgURL = "https://www.kkkk1000.com/images/learnPixiJS-TweenAnimation/strobe.png";
+      //加载图像，加载完成后执行setup函数 
+      PIXI.loader.add(imgURL).load(setup);
+
+      function setup() {
+        let resources = PIXI.loader.resources;
+        let sprite = new PIXI.Sprite(resources[imgURL].texture);
+
+        stage.addChild(sprite);
+        sprite.position.set(300, 300);
+        sprite.anchor.set(0.5, 0.5);
+
+        //闪光灯效果
+        c.strobe(sprite);
+
+        //开始游戏循环
+        gameLoop();
+      }
+
+      let state = play;
+
+      function gameLoop() {
+        // 循环调用gameLoop
+        requestAnimationFrame(gameLoop);
+        state();
+        //更新补间
+        c.update();
+        // 渲染舞台
+        renderer.render(stage);
+      }
+
+      //使精灵移动的函数
+      function play() {}
+    }
+
+    // 10.wobble
+    function wobble() {
+      //创建一个 Pixi应用 需要的一些参数
+      let option = {
+        width: 800,
+        height: 600,
+        transparent: true,
+      };
+      //创建一个 Pixi应用
+      let app = new PIXI.Application(option);
+      //获取舞台
+      let stage = app.stage;
+      //获取渲染器
+      let renderer = app.renderer;
+      let playground = document.getElementById('px-render');
+      //把 Pixi 创建的 canvas 添加到页面上
+      playground.appendChild(renderer.view);
+
+      //实例化Charm
+      let c = new Charm(PIXI);
+
+      //需要加载的图片的地址
+      let imgURL = "https://www.kkkk1000.com/images/learnPixiJS-TweenAnimation/wobble.png";
+      //加载图像，加载完成后执行setup函数 
+      PIXI.loader.add(imgURL).load(setup);
+
+      function setup() {
+        let resources = PIXI.loader.resources;
+        let sprite = new PIXI.Sprite(resources[imgURL].texture);
+
+        stage.addChild(sprite);
+        sprite.position.set(88, 160);
+        sprite.anchor.set(0.5, 0.5);
+
+        //果冻效果
+        c.wobble(sprite);
+
+        //开始游戏循环
+        gameLoop();
+      }
+
+      let state = play;
+
+      function gameLoop() {
+        // 循环调用gameLoop
+        requestAnimationFrame(gameLoop);
+        state();
+        //更新补间
+        c.update();
+        // 渲染舞台
+        renderer.render(stage);
+      }
+
+      function play() {}
+    }
+  </script>
+</body>
