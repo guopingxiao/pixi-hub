@@ -9,7 +9,11 @@ export class App extends Component {
   render () {
     return (
       <Container>
-        <Text text='hello world' style={{ fill: 0xFF0000 }} x={10} y={10} />
+        <Text text='hello pixi.js'
+          style={{ fill: '0xFFFFFF', fontSize: 80 }}
+          x={100}
+          y={160}
+        />
       </Container>
     )
   }

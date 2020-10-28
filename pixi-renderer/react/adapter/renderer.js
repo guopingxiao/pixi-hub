@@ -1,10 +1,8 @@
 import * as PIXI from 'pixi.js'
 import ReactFiberReconciler from 'react-reconciler'
-
 import { createElement } from './elements'
 import {
   prepPropChanges,
-
   applyPayload
 } from './props'
 

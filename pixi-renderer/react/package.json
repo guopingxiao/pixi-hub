@@ -7,7 +7,7 @@
     "dev": "parcel index.html -p 8082"
   },
   "dependencies": {
-    "pixi.js": "^4.8.2",
+    "pixi.js": "^5.3.2",
     "react": "^16.5.2",
     "react-reconciler": "^0.15.0"
   },
@@ -16,7 +16,6 @@
     "@babel/preset-env": "^7.12.1",
     "@babel/preset-react": "7.x",
     "parcel-bundler": "^1.12.4",
-    "pixi.js": "4.5.6",
     "typescript": "^3.1.1"
   }
 }

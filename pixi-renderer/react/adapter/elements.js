@@ -16,10 +16,18 @@ const wrapDisplayObject = (props) => (displayObject) => {
   return displayObject
 }
 
+/**
+ * 获取Sprite
+ * @param {*} param0 
+ */
 const getSprite = ({ texture, ...props }) => {
   return new PIXI.Sprite(texture)
 }
 
+/**
+ * 获取文本Text
+ * @param {*} param0 
+ */
 const getText = ({ text, style, canvas, ...props }) => {
   const pixiText = new PIXI.Text(text, style, canvas)
   pixiText.x = props.x || 0
@@ -27,6 +35,12 @@ const getText = ({ text, style, canvas, ...props }) => {
   return pixiText
 }
 
+/**
+ * 创建元素 container| graphics | text | sprite
+ * @param {*} type 
+ * @param {*} props 
+ * @param {*} rootContainerInstance 
+ */
 export const createElement = (type, props, rootContainerInstance) =>
   wrapDisplayObject(props)(
     (() => {
