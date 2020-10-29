@@ -1,5 +1,6 @@
 import { Application } from "pixi.js";
-// setup canvas
+
+// setup game
 export const game = new Application({
   width:  14*60,
   height: 12*60,

@@ -1,4 +1,6 @@
 import { reactive } from "@vue/runtime-core";
+
+
 export function useCreateEnemyTank(enemyInitData) {
   const enemyTanks = reactive(enemyInitData);
   return {
@@ -6,12 +8,19 @@ export function useCreateEnemyTank(enemyInitData) {
   };
 }
 
+/**
+ * 无敌状态
+ * @param {*} buffInitData 
+ */
 export function useInvunerableBuff(buffInitData) {
   const InvulnerableBuffs = reactive(buffInitData);
 
   return InvulnerableBuffs;
 }
 
+/**
+ * 创建子弹
+ */
 export function useCreateBullets() {
   const bullets = reactive([]);
 
@@ -25,6 +34,12 @@ export function useCreateBullets() {
   };
 }
 
+/**
+ * 创建坦克
+ * @param {*} PlayerInitialData 
+ * @param {*} environmentRuleHasCollision 
+ * @param {*} environment 
+ */
 export function useCreateTank(
   PlayerInitialData,
   environmentRuleHasCollision,

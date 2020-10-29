@@ -1,13 +1,20 @@
-// 根组件
-
 import { defineComponent, h, computed, ref } from "@vue/runtime-core";
 import StartPage from "./page/StartPage";
 import GamePage from "./page/GamePage";
 import EndPage from "./page/EndPage";
 import Coverpage from "./page/levelProgressionPage";
-import { GameLevel1Setup, GameLevel2Setup, GameLevel3Setup, GameLevel1EnemiesTankQueue, GameLevel2EnemiesTankQueue, GameLevel3EnemiesTankQueue } from "./environment-config/envConfig";
+import {
+  GameLevel1Setup,
+  GameLevel2Setup,
+  GameLevel3Setup,
+  GameLevel1EnemiesTankQueue,
+  GameLevel2EnemiesTankQueue,
+  GameLevel3EnemiesTankQueue
+} from "./environment-config/envConfig";
 
-
+/**
+ * 根组件, 定义页面路由
+ */
 export default defineComponent({
   setup() {
     const currentPageName = ref("StartPage");
@@ -52,6 +59,7 @@ export default defineComponent({
       gameLevel
     };
   },
+
   render(ctx) {
     // 响应式数据来的 -> vnode -> dom element
     return h("Container", [

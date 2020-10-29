@@ -1,6 +1,20 @@
 import { onMounted, onUnmounted } from "@vue/runtime-core";
 import { bulletHitTestObject } from "../utils/index";
 import { game } from "../Game";
+
+/**
+ * 战斗状态
+ * @param {*} bgMusic 
+ * @param {*} level 
+ * @param {*} enemyTanks 
+ * @param {*} enemyTanksTypes2 
+ * @param {*} bullets 
+ * @param {*} enemyBullets 
+ * @param {*} playerTankInfo 
+ * @param {*} emit 
+ * @param {*} environment 
+ * @param {*} InvulnerableBuffs 
+ */
 export function useFighting(
   bgMusic,
   level,
@@ -15,6 +29,8 @@ export function useFighting(
 ) {
   const handleTicker = () => {
     const { SteelBlocks, WallsBlocks } = environment;
+
+    // 我方子弹
     bullets.forEach(bulletInfo => {
       switch (bulletInfo.direction) {
         case "TOP":
@@ -32,6 +48,7 @@ export function useFighting(
       }
     });
 
+    // 敌方子弹
     enemyBullets.forEach(bulletInfo => {
       switch (bulletInfo.direction) {
         case "TOP":
@@ -49,6 +66,7 @@ export function useFighting(
       }
     });
 
+    // 敌方坦克
     enemyTanks.forEach(enemyInfo => {
       if (playerTankInfo.status !== "INVINCIBLE" && bulletHitTestObject(enemyInfo, playerTankInfo)) {
         playerTankInfo.status = "DEAD";
@@ -69,6 +87,7 @@ export function useFighting(
     //   }
     // });
 
+    // 无敌状态
     InvulnerableBuffs.forEach((buff, buffIndex) => {
       if (bulletHitTestObject(buff, playerTankInfo)) {
         InvulnerableBuffs.splice(buffIndex, 1);
@@ -91,6 +110,7 @@ export function useFighting(
       }
     }
 
+    // 敌方坦克碰撞检测
     enemyBullets.forEach((enemyInfo, bulletIndex) => {
       if (bulletHitTestObject(enemyInfo, playerTankInfo)) {
         enemyBullets.splice(bulletIndex, 1);
@@ -105,6 +125,7 @@ export function useFighting(
       }
     });
 
+    // 敌方子弹碰撞检测
     bullets.forEach((bulletInfo, bulletIndex) => {
       enemyBullets.forEach((enemyBulletInfo, enemyIndex) => {
         if (bulletHitTestObject(bulletInfo, enemyBulletInfo)) {
@@ -197,6 +218,7 @@ export function useFighting(
   };
 
   onMounted(() => {
+    // 加载游戏更新
     game.ticker.add(handleTicker);
   });
 

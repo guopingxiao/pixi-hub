@@ -1,6 +1,6 @@
 
-import { createApp } from "./src/runtime-canvas";
+import { createApp } from "./src/runtime-pixi";
 import App from "./src/App";
-import {getRootContainer} from './src/Game'
+import { getRootContainer } from './src/Game'
 
 createApp(App).mount(getRootContainer());

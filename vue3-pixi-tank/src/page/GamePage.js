@@ -3,7 +3,7 @@ import {
   defineComponent,
   toRefs
 } from "@vue/runtime-core";
-import { useFighting } from "../state/FightMechanismState"; 
+import { useFighting } from "../state/FightState"; 
 import { useEnvironmentInteraction, useBackgrounds } from "../state/EnvState";
 import { useCreateTank, useCreateEnemyTank, useCreateBullets, useInvunerableBuff }from "../state/GameState";
 import Steels from "../component/Steels";
@@ -58,9 +58,7 @@ export default defineComponent({
     );
 
     const WaterBlocks = useBackgrounds(WaterInitialData);
-
     const GrassBlocks = useBackgrounds(GrassInitialData);
-
 
     const InvulnerableBuffs = useInvunerableBuff(InvunerableBuffInitialData);
 
