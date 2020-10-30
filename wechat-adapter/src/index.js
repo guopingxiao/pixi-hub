@@ -42,7 +42,6 @@ if (platform === 'devtools') {
   }
 } else {
   GameGlobal.Image = Image
-  GameGlobal.window = GameGlobal
   GameGlobal.ontouchstart = noop
   GameGlobal.document = document
   GameGlobal.location = location
@@ -58,4 +57,5 @@ if (platform === 'devtools') {
   GameGlobal.HTMLVideoElement = HTMLVideoElement
   GameGlobal.HTMLCanvasElement = HTMLCanvasElement
   GameGlobal.WebGLRenderingContext = GameGlobal.WebGLRenderingContext || {}
+  GameGlobal.window = GameGlobal
 }
