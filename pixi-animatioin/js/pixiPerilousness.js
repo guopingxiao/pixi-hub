@@ -127,7 +127,6 @@ function gameLoop() {
 
 function play() {
     sky.tilePosition.x -= 1; //通过修改平铺精灵 sky 的 tilePosition属性的 x 坐标，使天空背景滚动
-
     //finish 精灵在屏幕外时，每一帧左移2个像素.  一旦finish 精灵滚动到视图中，blocks 容器将停止移动
     if (finish.getGlobalPosition().x > 256) {
         blocks.x -= 2;
@@ -169,16 +168,12 @@ function play() {
         }
     }
 
-    //遍历 blocks.children 数组，检测每个块和小精灵之间的碰撞。
-    //如果 hitTestRectangle 返回 true ，则退出循环，表示小精灵碰撞到柱子了。
-    // hitTestRectangle 方法的第三个参数必须为  true ，以便强制 hitTestRectangle  方法使用全局坐标进行碰撞检测。
+    //遍历 blocks.children 数组，检测每个块和小精灵之间的碰撞。如果 hitTestRectangle 返回 true ，则退出循环，表示小精灵碰撞到柱子了。hitTestRectangle 方法的第三个参数必须为  true ，以便强制 hitTestRectangle  方法使用全局坐标进行碰撞检测。
     let pixieVsBlock = blocks.children.some(function (block) {
         return b.hitTestRectangle(pixie, block, true);
     });
 
-    //如果 pixieVsBlock 为 true ，并且当前小精灵可见，
-    //则运行小精灵爆炸成一堆小星星的代码。
-    //它使小精灵变的不可见，并产生粒子爆炸效果，而且在延迟3秒后调用游戏的 reset 函数，重置游戏
+    //如果 pixieVsBlock 为 true ，并且当前小精灵可见，则运行小精灵爆炸成一堆小星星的代码。它使小精灵变的不可见，并产生粒子爆炸效果，而且在延迟3秒后调用游戏的 reset 函数，重置游戏
     if (pixieVsBlock && pixie.visible) {
         //使小精灵不可见
         pixie.visible = false;
